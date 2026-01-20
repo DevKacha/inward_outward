@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Role {
+  RoleID   Int     @id @default(autoincrement())
+  RoleName String  @unique @db.VarChar(50)
+  users    User[]
+}
+
+model Team {
+  TeamID        Int       @id @default(autoincrement())
+  TeamName      String    @unique @db.VarChar(100)
+  ManagerUserID Int?
+  IsActive      Boolean   @default(true)
+  Created       DateTime  @default(now())
+  Modified      DateTime? @updatedAt
+  users         User[]
+}
+
+model User {
+  UserID   Int       @id @default(autoincrement())
+  Username String    @unique @db.VarChar(50)
+  Password String    @db.VarChar(500)
+  RoleID   Int
+  TeamID   Int?
+  IsActive Boolean   @default(true)
+  Created  DateTime  @default(now())
+  Modified DateTime? @updatedAt
+
+  role Role @relation(fields: [RoleID], references: [RoleID])
+  team Team? @relation(fields: [TeamID], references: [TeamID])
+}
+
+model InwardOutwardOffice {
+  InwardOutwardOfficeID Int       @id @default(autoincrement())
+  OfficeName            String    @db.VarChar(250)
+  InstituteID           Int
+  DepartmentID          Int?
+  OpeningDate           DateTime
+  OpeningInwardNo       Int
+  OpeningOutwardNo      Int
+  Remarks               String?   @db.VarChar(500)
+  UserID                Int
+  Created               DateTime  @default(now())
+  Modified              DateTime  @updatedAt
+}
+
+model InOutwardFromTo {
+  InOutwardFromToID   Int      @id @default(autoincrement())
+  InOutwardFromToName String?  @db.VarChar(100)
+  IsActive            Boolean  @default(true)
+  Sequence            Decimal?
+  Remarks             String?  @db.VarChar(500)
+  UserID              Int
+  Created             DateTime @default(now())
+  Modified            DateTime @updatedAt
+  PersonName          String?  @db.VarChar(100)
+  Address             String?  @db.VarChar(250)
+  Place               String?  @db.VarChar(100)
+}
+
+model InOutwardMode {
+  InOutwardModeID   Int      @id @default(autoincrement())
+  InOutwardModeName String   @db.VarChar(100)
+  IsActive          Boolean  @default(true)
+  Sequence          Decimal?
+  Remarks           String?  @db.VarChar(500)
+  UserID            Int
+  Created             DateTime @default(now())
+  Modified            DateTime @updatedAt
+}
+
+model CourierCompany {
+  CourierCompanyID  Int      @id @default(autoincrement())
+  CourierCompanyName String   @db.VarChar(100)
+  ContactPersonName String?  @db.VarChar(100)
+  DefaultRate       Decimal?
+  Remarks           String?  @db.VarChar(500)
+  UserID            Int
+  Created             DateTime @default(now())
+  Modified            DateTime @updatedAt
+  PhoneNo           String?  @db.VarChar(50)
+  Email             String?  @db.VarChar(50)
+  Website           String?  @db.VarChar(50)
+  Address           String?  @db.VarChar(500)
+}
+
+model Inward {
+  InwardID                  Int       @id @default(autoincrement())
+  InwardNo                  String    @db.VarChar(50)
+  InwardDate                DateTime
+  ReceivedDate              DateTime?
+  OutwardID                 Int?
+  InOutwardModeID           Int?
+  ReceiptNo                 String?   @db.VarChar(100)
+  ReceiptDate               DateTime?
+  InwardLetterNo            String?   @db.VarChar(100)
+  InwardLetterDate          DateTime?
+  Subject                   String?
+  Description               String?   @db.VarChar(500)
+  InOutwardFromToID         Int?
+  LetterFromName            String?   @db.VarChar(100)
+  LetterFromAddress         String?   @db.VarChar(500)
+  InstituteID               Int?
+  DepartmentID              Int?
+  ToPersonName              String?   @db.VarChar(100)
+  InwardDocumentPath        String?   @db.VarChar(250)
+  Remarks                     String?   @db.VarChar(500)
+  UserID                      Int
+  Created                     DateTime  @default(now())
+  Modified                    DateTime  @updatedAt
+  CourierCompanyName        String?   @db.VarChar(100)
+  NoOfCompilation             String?   @db.VarChar(250)
+  CopyTo                      String?   @db.VarChar(250)
+  FromContactDetails          String?   @db.VarChar(250)
+  FromInwardOutwardOfficeID   Int?
+  ToInwardOutwardOfficeID     Int
+  InternalOutwardID           Int?
+  FinYearID                   Int
+  SubjectShort                String?   @db.VarChar(100)
+  OtherInstitute              String?   @db.VarChar(150)
+}
+
+model Outward {
+  OutwardID                 Int       @id @default(autoincrement())
+  OutwardNo                 String    @db.VarChar(50)
+  OutwardDate               DateTime
+  InwardID                  Int?
+  InstituteID               Int?
+  DepartmentID              Int?
+  OutwardByPerson           String?   @db.VarChar(100)
+  InOutwardFromToID         Int?
+  LetterForwardedToName       String?   @db.VarChar(500)
+  LetterForwardedToAddress    String?   @db.VarChar(250)
+  LetterForwardedToPlace      String?   @db.VarChar(100)
+  InOutwardModeID           Int?
+  LetterNo                    String?   @db.VarChar(100)
+  LetterDate                  DateTime?
+  Subject                     String?   @db.VarChar(250)
+  CourierReceiptNo            String?   @db.VarChar(100)
+  CourierReceiptDate          DateTime?
+  Amount                      Decimal?
+  AmountPaidType              String?   @db.VarChar(10)
+  CourierReceiptPath          String?   @db.VarChar(250)
+  CourierAcknowledgePath      String?   @db.VarChar(250)
+  OutwardDocumentPath         String?   @db.VarChar(250)
+  Remarks                     String?   @db.VarChar(500)
+  UserID                      Int
+  Created                     DateTime  @default(now())
+  Modified                    DateTime  @updatedAt
+  IsReturned                  Boolean   @default(false)
+  ReturnReason                String?   @db.VarChar(500)
+  ReturnAction                String?   @db.VarChar(500)
+  NoOfCompilation             String?   @db.VarChar(250)
+  CourierCompanyID            Int?
+  CopyTo                      String?   @db.VarChar(250)
+  ToContactDetails            String?   @db.VarChar(250)
+  ReturnDate                  DateTime?
+  FromInwardOutwardOfficeID   Int
+  ToInwardOutwardOfficeID     Int?
+  FinYearID                   Int
+  FileNo                      String?   @db.VarChar(50)
+  SMSToCSV                    String?   @db.VarChar(250)
+  EmailToCSV                  String?   @db.VarChar(250)
+  SubjectShort              String?   @db.VarChar(100)
+  OtherInstitute              String?   @db.VarChar(150)
+  Charges                     Decimal?
+  TrackingID                  String?   @db.VarChar(50)
+  DeliveryStatus              String?   @db.VarChar(50)
+}
